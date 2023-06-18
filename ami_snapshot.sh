@@ -13,7 +13,7 @@ fi
 
 # Parses the command line arguments the user inputs.
 # It should extract the instance ID and bucket name the user inputs as arguments.
-# It will provide and error message for unknown options and exit
+# It will output an error message for unknown options and exit
 while [[ $# -gt 0 ]]
 do
 key="$1"
