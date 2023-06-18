@@ -36,7 +36,7 @@ case $key in
 esac
 done
 
-# After accepting the arguments from the while loop, it takes an EC2 instance snapshot and waits for it to complete.
+# After accepting the arguments, it takes an EC2 instance snapshot and waits for it to complete.
 SNAPSHOT_ID=$(aws ec2 create-snapshot --description "Automated snapshot" --instance-id ${INSTANCE_ID} --query 'SnapshotId' --output text --wait)
 
 # This should store the recently taken snapshot and upload it to the associated S3 bucket
