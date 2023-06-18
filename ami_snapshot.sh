@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## how to run the script:
+## ./amisnapshit.sh --instace=<instance_id> --bucket=<bucket_name>
+
 # Checks if the user is already logged in
 aws sts get-caller-identity &> /dev/null
 if [ $? -ne 0 ]; then
