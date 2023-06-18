@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 ## how to run the script:
 ## ./ami_snapshot.sh --ami=<ami_id> --bucket=<bucket_name>
 
