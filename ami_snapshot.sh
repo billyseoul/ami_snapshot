@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## how to run the script:
-## ./ami_snapshot.sh --ami=<instance_id> --bucket=<bucket_name>
+## ./ami_snapshot.sh --ami=<ami_id> --bucket=<bucket_name>
 
 # Checks if the user is already logged in
 aws sts get-caller-identity &> /dev/null
