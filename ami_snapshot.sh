@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## how to run the script:
-## ./ami_snapshot.sh --instance=<instance_id> --bucket=<bucket_name>
+## ./ami_snapshot.sh --ami=<instance_id> --bucket=<bucket_name>
 
 # Checks if the user is already logged in
 aws sts get-caller-identity &> /dev/null
@@ -19,8 +19,8 @@ do
 key="$1"
 
 case $key in
-    --instance)
-    INSTANCE_ID="$2"
+    --ami)
+    AMI_ID="$2"
     shift # past argument
     shift # past value
     ;;
@@ -36,11 +36,21 @@ case $key in
 esac
 done
 
-# After accepting the arguments, it takes an EC2 instance snapshot and waits for it to complete.
-SNAPSHOT_ID=$(aws ec2 create-snapshot --description "Automated snapshot" --instance-id ${INSTANCE_ID} --query 'SnapshotId' --output text --wait)
+# Take AMI snapshot
+SNAPSHOT_ID=$(aws ec2 create-image --instance-id ${AMI_ID} \
+                                   --name "${AMI_ID}-snapshot" \
+                                   --description "Automated snapshot" \
+                                   --block-device-mappings "[{ \"DeviceName\": \"/dev/sda1\", \"Ebs\": { \"DeleteOnTermination\": false, \"VolumeType\": \"gp2\" }}]" \
+                                   --output text)
 
-# This should store the recently taken snapshot and upload it to the associated S3 bucket
-aws s3 cp --content-length 0 /dev/null s3://${BUCKET_NAME}/${SNAPSHOT_ID}.img --sse
+# Wait for snapshot to complete
+aws ec2 wait image-available --image-ids ${SNAPSHOT_ID}
 
-# Output confirmation of snapshot and where it's stored.
-echo "Snapshot of instance ${INSTANCE_ID} taken and stored in S3 bucket ${BUCKET_NAME}"
+# Store snapshot in S3 bucket
+aws s3 cp "${SNAPSHOT_ID}.img" "s3://${BUCKET_NAME}/${SNAPSHOT_ID}.img"
+
+# Delete local snapshot file
+rm "${SNAPSHOT_ID}.img"
+
+# Output confirmation
+echo "Snapshot of AMI ${AMI_ID} taken and stored in S3 bucket ${BUCKET_NAME}"
