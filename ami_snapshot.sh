@@ -1,8 +1,11 @@
 #!/bin/bash
 
-set -e
+
 ## how to run the script:
 ## ./ami_snapshot.sh --ami=<ami_id> --bucket=<bucket_name>
+
+# If a command returns a non-zero status, it should exit out the script
+set -e
 
 # Checks if the user is already logged in
 aws sts get-caller-identity &> /dev/null
